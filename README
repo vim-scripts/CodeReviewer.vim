@@ -1,0 +1,15 @@
+This is a mirror of http://www.vim.org/scripts/script.php?script_id=1041
+
+If you do code reviews on a regular basis, this script could be of help to you. This tip is about - 
+1. Helping the reviewer review code 
+2. Helping the author in collating reviews from various peers 
+3. Helping the author in fixing the review comments
+
+Typical review session: 
+1. A reviewer open the code to review, positions the cursor on the line he/she wants to comment on and types "\ic" - this puts the file name, the line number, the reviewer's initials and the defect type in the review file
+2. The comment is typed next to the line number and can span multiple lines
+3. Send the comments to the author of the code 
+4. The author collates the inputs from various reviewers into one file (by simply concatenating them) and sorts it. Now the comments are arranged per file, in the order of line numbers (in a file called say, all_comments.txt) 
+5. Using the :cfile all_comments.txt (or :CheckReview) the author can now navigate through all the comments.
+
+This script is based on vimtip #761. Thanks to all for feedback! Specifically to Salman for providing an implementation for automating the step between saving position in the file being reviewed and inserting a comment in the review file.

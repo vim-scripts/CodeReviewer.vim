@@ -1,0 +1,155 @@
+*CodeReviewer.txt*  A tool for code reviews Last Change: Jul 20 2004
+
+Code Reviewer                                         *CodeReviewer* *review*
+                              Version 0.1.0
+
+If you do code reviews on a regular basis, this script could be of
+help to you. This tip is about -
+1. Helping the reviewer review code 
+2. Helping the author in collating reviews from various peers 
+3. Helping the author in fixing the review comments 
+
+|codereviewer_installation|    Installation
+|codereviewer_usage|           Usage
+|codereviewer_changelog|       Change Log
+|codereviewer_todo|            Todo
+|codereviewer_credits|         Credits
+
+This plugin is only available if 'compatible' is not set.
+
+{Vi does not have any of this}
+
+------------------------------------------------------------------------------
+INSTALLATION                                       *codereviewer_installation*
+
+Typically one would put CodeReview.vim into the .vim/plugin directory
+(vimfiles\plugin for Windows) where it becomes automatically available
+for use.
+
+To add this help file to vim's help, copy this to .vim/doc directory
+(vimfiles\doc for Windows) and do: >
+ :helptags ~/.vim/doc
+or (for windows) >
+ :helptags $VIMRUNTIME\..\vimfiles\doc
+See |add-local-help| for more information
+
+A syntax file for review comments is provided (rev.vim). This should be
+put in .vim/syntax (vimfiles\syntax for windows)
+
+-------------------------------------------------------------------------------
+USAGE                                                     *codereviewer_usage*
+
+                                                      *g:CodeReviewer_reviewer*
+First, you need to set your initials that would be used in the review
+comment. For this, set the CodeReviewer_reviewer variable: >
+  let g:CodeReviewer_reviewer="KG"  " Your initials
+The variable must be set to a string that contains only alphabets
+([a-zA-Z]\+). You can put this in your .vimrc/_vimrc file
+
+                                                    *g:CodeReviewer_reviewFile*
+Next, to specify the file to be used for entering the review comments, use: >
+  let g:CodeReviewer_reviewFile="file_name.rev"   " Set review file name
+As an example: >
+  let g:CodeReviewer_reviewFile="$HOME . "/review_KG.rev"
+Note:
+1. The file name must end in ".rev". This is used for autodetecting
+   the file type for syntax highlighting
+2. In specifying the path, always use the "/" seperator
+
+The working directory of vim/gvim is to be set before the reviewer
+start inserting comments. Suppose the sources have been sent to the reviewer
+in the directory tree as shown below:
+        top/
+        |-- Readme
+        |-- inc
+        |   `-- file.h
+        |-- review
+        `-- src
+            `-- file.cpp
+Assume that the three files - Readme, file.h and file.cpp are to be reviewed
+and the comments are to be stored in top/review/comments.txt. Open a vim/gvim
+session, and change directory to review (see |:cd|). This is needed to insert
+the correct relative paths in the review comments file
+
+Now you are ready to start the review. To insert review comments in
+the currently viewed file, use: >
+ \ic
+This should put a line like shown below in the review file,
+   ../inc/file.h:20: KG - [Defect]
+and leave you in insert mode after "[Defect]". You can now type your comments
+(on multiple lines).
+
+By default, in sorting commands that can be done on the file, the
+commands that follow a "file_name:line_number" are chunked together.
+So, if you have:
+   ../inc/file.h:20: KG - [Defect] A major review defect that
+             continues on the line below. These lines will
+             be chunked together for the sorting commands that
+             follow. The next review comment in on the line
+             below
+   ../inc/file.h:40: KG - [Remark] Next remark starts...
+
+If you'd like to chunk two (or more) review remarks together in the
+sorting operations that follow, you must use the line continuation
+character "\" as shown below:
+   ../inc/file.h:20: KG - [Defect] A major review defect that
+             continues on the line below. These lines will
+             be chunked together for the sorting commands that
+             follow. The next review comment in on the line
+             below, and gets chunked with this one because of the
+             line continuation symbol at the end of this line \
+   ../inc/file.h:40: KG - [Remark] Next remark starts...
+
+Once your (and other peer's) comments are ready, you can concatenate them into
+one review file (using unix "cat" or similar command - ofcourse you can use
+vim for this too!)
+
+Next step is to probably sort the file so that in a review meeting you can go
+thro' all the comments for a file (in the order of line numbers) and then go
+to the next file. To do this, open the collated review file, set the
+g:CodeReviewer_reviewFile to the path to the collated file, and use: >
+ :SortReviewFile
+After sorting, it might be required to put all the defects first, questions
+next, and the remarks in the end. For doing this, use: >
+ :let g:CodeReviewer_sortDefects=1
+before doing the sort.
+Sorting preserves the "chunking" as defined earlier.
+Note: :SortReviewFile assumes the presence of an external sort program that is
+POSIX.2 compilant.
+
+To browse through your review comments, use: >
+ :CheckReview
+You can use the quickfix commands (see |quickfix|) to browse
+
+The default keymap uses \ic. If you would like to use something other
+than '\', you may simply change the leader (see |mapleader|).
+
+You can avoid loading this plugin by setting the "loaded_CodeReviewer"
+variable: >
+  :let g:loaded_CodeReviewer = 1
+
+-------------------------------------------------------------------------------
+CHANGE LOG                                             *codereviewer_changelog*
+
+0.1.0  - Added multi-line comment support, and fixed sorting issues
+0.0.1  - Initial release based on vimtip #761
+
+-------------------------------------------------------------------------------
+TODO                                                        *codereviewer_todo*
+
+1. More document updates?
+2. Think more on the review process - may mean changes to script
+
+-------------------------------------------------------------------------------
+CREDITS                                                  *codereviewer_credits*
+
+Author: Karthick Gururaj <karthickgururaj at yahoo dot com>
+
+Thanks to Salman Halim for providing an implementation that automates
+the step between saving position in the file being reviewed and
+inserting the comment
+
+Buffer Explorer (by Jeff Lanzarotta) help file has been used as a
+template for writing this help file.
+-------------------------------------------------------------------------------
+vim:tw=78:ts=8:ft=help:norl:
