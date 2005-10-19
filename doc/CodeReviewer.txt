@@ -1,7 +1,7 @@
-*CodeReviewer.txt*  A tool for code reviews Last Change: Jul 20 2004
+*CodeReviewer.txt*  A tool for code reviews Last Change: Oct 20 2005
 
 Code Reviewer                                         *CodeReviewer* *review*
-                              Version 0.1.0
+                              Version 0.2.0
 
 If you do code reviews on a regular basis, this script could be of
 help to you. This tip is about -
@@ -11,8 +11,8 @@ help to you. This tip is about -
 
 |codereviewer_installation|    Installation
 |codereviewer_usage|           Usage
-|codereviewer_changelog|       Change Log
 |codereviewer_todo|            Todo
+|codereviewer_changelog|       Change Log
 |codereviewer_credits|         Credits
 
 This plugin is only available if 'compatible' is not set.
@@ -25,6 +25,9 @@ INSTALLATION                                       *codereviewer_installation*
 Typically one would put CodeReview.vim into the .vim/plugin directory
 (vimfiles\plugin for Windows) where it becomes automatically available
 for use.
+
+This package also includes a Sort.vim that provides a platform independent
+sort function. This is taken from |eval-examples|
 
 To add this help file to vim's help, copy this to .vim/doc directory
 (vimfiles\doc for Windows) and do: >
@@ -50,7 +53,7 @@ The variable must be set to a string that contains only alphabets
 Next, to specify the file to be used for entering the review comments, use: >
   let g:CodeReviewer_reviewFile="file_name.rev"   " Set review file name
 As an example: >
-  let g:CodeReviewer_reviewFile="$HOME . "/review_KG.rev"
+  let g:CodeReviewer_reviewFile=$HOME . "/review_KG.rev"
 Note:
 1. The file name must end in ".rev". This is used for autodetecting
    the file type for syntax highlighting
@@ -100,6 +103,10 @@ character "\" as shown below:
              line continuation symbol at the end of this line \
    ../inc/file.h:40: KG - [Remark] Next remark starts...
 
+Note: The supported defect types are:
+  1. [Defect]
+  2. [Remark]
+  3. [Question]
 Once your (and other peer's) comments are ready, you can concatenate them into
 one review file (using unix "cat" or similar command - ofcourse you can use
 vim for this too!)
@@ -114,8 +121,6 @@ next, and the remarks in the end. For doing this, use: >
  :let g:CodeReviewer_sortDefects=1
 before doing the sort.
 Sorting preserves the "chunking" as defined earlier.
-Note: :SortReviewFile assumes the presence of an external sort program that is
-POSIX.2 compilant.
 
 To browse through your review comments, use: >
  :CheckReview
@@ -129,16 +134,20 @@ variable: >
   :let g:loaded_CodeReviewer = 1
 
 -------------------------------------------------------------------------------
-CHANGE LOG                                             *codereviewer_changelog*
-
-0.1.0  - Added multi-line comment support, and fixed sorting issues
-0.0.1  - Initial release based on vimtip #761
-
--------------------------------------------------------------------------------
 TODO                                                        *codereviewer_todo*
 
-1. More document updates?
-2. Think more on the review process - may mean changes to script
+If the file path in the review file has spaces or the drive letter prefixed,
+like in the line below,
+   C:/a_directory/file:10: KG - [M] Comment
+   C:/Program Files/file:10: KG - [M] Comment
+then the sorting algorithm fails.
+-------------------------------------------------------------------------------
+CHANGE LOG                                             *codereviewer_changelog*
+
+0.2.0  - Included SortR function for platform independent sorting
+         Fixed syntax issues
+0.1.0  - Added multi-line comment support, and fixed sorting issues
+0.0.1  - Initial release based on vimtip #761
 
 -------------------------------------------------------------------------------
 CREDITS                                                  *codereviewer_credits*
@@ -151,5 +160,11 @@ inserting the comment
 
 Buffer Explorer (by Jeff Lanzarotta) help file has been used as a
 template for writing this help file.
+
+Sorting happens using the SortR function provided by Robert Webb (see
+|eval-examples|)
+
+The idea of using ^A for joining lines before sorting comes from chunksort
+(see http://examples.oreilly.com/upt2/split/chunksort)
 -------------------------------------------------------------------------------
 vim:tw=78:ts=8:ft=help:norl:

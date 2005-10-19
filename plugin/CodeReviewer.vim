@@ -1,8 +1,8 @@
 " Vim plugin file for inserting review comments
 "
 " Maintainer:	Karthick Gururaj <karthickgururaj at yahoo dot com>
-" Last change:	Jul 20 2004
-" Version:     0.1.0
+" Last change:	Oct 20 2005
+" Version:     0.2.0
 
 if exists( "g:loaded_CodeReviewer" ) 
   finish 
@@ -39,11 +39,7 @@ function! s:SortReviewFile()
   "   ..corner case - remove trailing ctrl-As
   silent! %s/$//
   " Sort all lines
-  "  - Assumes presence of sort which can take a field seperator (-t <char)
-  "    and multiple fields (-k <keyname>)
-  " POSIX.2 compilant sort should work
-  silent 0,$!sort -t: -k1,1 -k2n,2
-  " silent 0,$!sort
+  silent call SortR(0, line("$"), "DefectCmp")
 
   if exists("g:CodeReviewer_sortDefects") && g:CodeReviewer_sortDefects == 1
      " This script uses registers D, Q, and R, so save register values
@@ -105,3 +101,28 @@ function! OpenOrSwitch( theFile )
 endfunction 
 " Need this option for the above function to work properly
 set switchbuf=useopen
+
+" Function for use with SortR()
+func! DefectCmp(str1, str2)
+  let fname1 = matchstr(a:str1, "[^:]*")
+  let line_num1 = matchstr(a:str1, "[^:]*", strlen(fname1) + 1)
+  let author1 = matchstr(a:str1, "[^-]*", strlen(fname1) + 1 + strlen(line_num1) + 1)
+  let fname2 = matchstr(a:str2, "[^:]*")
+  let line_num2 = matchstr(a:str2, "[^:]*", strlen(fname2) + 1)
+  let author2 = matchstr(a:str2, "[^-]*", strlen(fname2) + 1 + strlen(line_num2) + 1)
+  if (fname1 < fname2)
+	return -1
+  elseif (fname1 > fname2)
+	return 1
+  elseif (line_num1 + 0 < line_num2 + 0 )
+	return -1
+  elseif (line_num1 + 0 > line_num2 + 0)
+	return 1
+  elseif (author1 < author2)
+	return -1
+  elseif (author1 > author2)
+	return 1
+  else
+	return 0
+  endif
+endfunction
